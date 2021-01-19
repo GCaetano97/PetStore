@@ -8,6 +8,7 @@ function Header() {
       <Typography>FindAPet</Typography>
       <Link href="/about">
         <Typography>About</Typography>
+        <Typography>Try</Typography>
       </Link>
     </Toolbar>
   );
