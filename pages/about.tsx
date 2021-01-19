@@ -2,9 +2,7 @@ import React from 'react';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import ProTip from '../src/ProTip';
 import Link from '../src/Link';
-import Copyright from '../src/Copyright';
 
 export default function About() {
   return (
@@ -15,8 +13,6 @@ export default function About() {
         </Typography>
         <Link href="/">Go to the main page</Link>
         <Typography>This is the About page</Typography>
-        <ProTip />
-        <Copyright />
       </Box>
     </Container>
   );
