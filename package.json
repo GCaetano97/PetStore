@@ -4,10 +4,12 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "latest",
+    "axios": "^0.21.1",
     "clsx": "latest",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "swr": "^0.4.1"
   },
   "scripts": {
     "dev": "next",
