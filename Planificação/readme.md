@@ -1,0 +1,44 @@
+FindAPet
+
+FindAPet will be a website for users to sell pets to others.
+
+
+
+##PAGES
+
+Homepage: Main page for the user to be redirected to the login or the store to search for pets. It'll have a hero component with a button to go to the page to search for pets. This will be a div with an img on background with a button to go to the store. After this will be filled with text to explain who we are and to give trust for the client and explaining who we are and what we do.
+
+Register: Register page, login will have a redirect to this one. Will be a form with a Username, email and password inputs all connected to state so it'll controlled. After the form is submit, a request is made with all the information in a object. All inputs will be strings. The form should be with border radius and centered. On success will appear a message and the user will be redirected to the login page and on failure there will be a message warning the user about the error and should stay on the page with the data remaining there, because of this the button should be unclickable for arround 2-3 seconds for stop spamming the server.
+
+Login: Login will be the main page with an option to change the page to the register one so the user can register or login. This page will have two inputs, a username and a password, both strings. Like on register, this form will be centered on the page and the information will be sent in a object to the server. On success the user is redirected to main page and a message will be there greeting the user. On failure there'll be a message warning the user about the error and the data will be cleared for the password. 
+
+Profile: After loggin in the user can see an avatar button and it'll lead to this page. Here the user can change his/her's settings. This is a form with various inputs being them: firstname, lastname, phone. All of them are saved in strings. On submit the form will be sent in a object containing all the data and sent to the server. On success user will be refresh on the page and it'll display all the new data on those fields as well as a message warning. On failure there will be a message and the user will be redirected to the homepage and logged out. 
+
+Store: Main page for searching. All available pets will be showing and there'll be a searchbar so users can search for specific pets. Upon entering the page the page will automatically fetch all the pets and it'll save them in an array. Each object will be called with the Individual Pet card component. If the user gets and error while getting the data it'll show a message explaining the error. On success it'll load everything normaly.
+
+
+Individual Pet page: Page for each pet after clicking on it on the store. It'll have all the details for the pet and if the user is logged in we can order it. All the text shown in from the object from the array in the store component and passed to this one. This will have a order button so the user can order a pet. This functionality will only be available if the user is logged in. If not the button is disabled. 
+
+
+All the pages will have access, via the header, to the main page, the store and, the login or register in case of the user is not logged in and the profile in case of the user is logged.
+
+Individual Pet will only be available through the store by clicking on each pet.
+
+The order page will only be accessible via the Individual Pet and only if the user is logged in.
+
+
+
+##COMPONENTS
+
+All pages:  -Header (with navigation)
+            -Footer
+
+Homepage:   -Hero (main image with buttons)
+            -divs explaining who we are and what we do
+
+Register/Login:     -Forms (one for each)
+
+Profile:    -Form to change profile
+
+Store:  -Search
+        -List with Individual Pet card:  -> Pet component
