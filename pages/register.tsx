@@ -10,17 +10,19 @@ function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const url = 'http://virtserver.swaggerhub.com/GCaetano978/PetstoreTest/1.0.0/user'
+  const url = 'https://petstore.swagger.io/v2/user'
 
   async function handleRegisterClick() {
     const registerObject = {
-      username,
-      email,
-      password,
+      id: Math.floor(Math.random()*10000000),
+      username: username,
+      email: email,
+      password: password,
+      userStatus: 0
     };
     console.log("register clicked");
     console.log(registerObject);
-
+    
     try{
       const res = await axios.post(url, registerObject)
       console.log(res)

@@ -1,4 +1,7 @@
-import React from "react";
+import React, {useContext} from "react";
+import fetcher from './fetcher'
+import useSWR from 'swr'
+import PetCard from './PetCard'
 import {
   Card,
   CardActionArea,
@@ -9,35 +12,19 @@ import {
   Typography,
   Grid,
 } from "@material-ui/core";
+import {Context} from '../src/context'
 
-const PetList = ({ data }) => {
-  console.log(Date());
+const PetList = () => {
+  const state = useContext(Context)
+  console.log('this is state', state)
+  const {data, error} = useSWR(`https://petstore.swagger.io/v2/pet/findByStatus?status=${state.state.filter}`, fetcher)
+
+  if (error) return <div>failed to load</div>
+  if(!data) return <div>loading...</div>
+
   return (
     <Grid container direction="row">
-      {data.map(
-        (animal: {
-          id: string | number | null | undefined;
-          photoUrls: string | undefined;
-          name: {} | null | undefined;
-        }) => {
-          return (
-            <Grid item key={animal.id} xs={3} style={{ marginBottom: "10px" }}>
-              <Card style={{ maxWidth: "345px" }}>
-                <CardActionArea>
-                  <CardMedia
-                    style={{ height: "140px" }}
-                    image={animal.photoUrls}
-                    title={animal.name}
-                  />
-                  <CardContent>
-                    <Typography>{animal.name}</Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          );
-        }
-      )}
+      {data.map(animal => <PetCard animal={animal} />)}
     </Grid>
   );
 };

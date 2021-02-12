@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Header from "../src/Header";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
@@ -6,12 +6,16 @@ import Box from "@material-ui/core/Box";
 import Link from "../src/Link";
 import { Paper, TextField, Button } from "@material-ui/core";
 import axios from 'axios'
+import {Context} from '../src/context'
+import { useRouter } from 'next/router'
 
 
 function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const url = 'http://virtserver.swaggerhub.com/GCaetano978/PetstoreTest/1.0.0/user/login'
+  const url = 'https://petstore.swagger.io/v2/user/login'
+  const state = useContext(Context)
+  const router = useRouter()
 
 
   async function handleLoginClick() {
@@ -19,8 +23,6 @@ function Login() {
       username,
       password
     }
-    console.log('login clicked')
-    console.log(loginObject)
     setUsername('')
     setPassword('')
 
@@ -31,7 +33,10 @@ function Login() {
           password: password
         }
       })
-      console.log(res)
+      state.update({...state.state, user: true, username: loginObject.username})
+      setTimeout(() => {
+        router.push('/')
+      },500)
     } catch (error) {
       console.log(error)
     }
