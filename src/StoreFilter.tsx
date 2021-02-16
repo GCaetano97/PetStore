@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from "react";
+import React, {useContext, useState } from "react";
 import {
     Grid,
     Paper,
@@ -10,8 +10,20 @@ import {
   } from "@material-ui/core";
 import {Context} from '../src/context'
 
+interface state {
+  state: {
+    user: boolean,
+    username: string,
+    filter: string,
+    pets: Array<Object>,
+    modal: boolean,
+    modalMessage: string,
+  },
+  update: Function
+}
+
 const StoreFilter = () => {
-  const state = useContext(Context)
+  const state: state = useContext(Context) as unknown as state
   const [filter, setFilter] = useState(state.state.filter)
 
   return (

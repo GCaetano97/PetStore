@@ -1,34 +1,44 @@
-import React, {createContext, useState} from 'react'
-import useSWR from 'swr'
-import fetcher from './fetcher'
+import React, { createContext, useState } from "react";
 
-let Context = createContext()
+let Context = createContext("");
 
-function Provider(props) {
-    const {data, error} = useSWR(`https://petstore.swagger.io/v2/pet/findByStatus?status=available`, fetcher)
+function Provider({ children }: any) {
+  const initialState = {
+    user: false,
+    username: "",
+    filter: "available",
+    pets: undefined,
+    modal: false,
+    modalMessage: "",
+  };
 
-    const initialState = {
-        user: false,
-        username: '',
-        filter: 'available',
-        pets: error? error : data
-    }
+  function update(
+    newState: React.SetStateAction<{
+      user: boolean;
+      username: string;
+      filter: string;
+      pets: undefined;
+      modal: boolean;
+      modalMessage: string;
+    }>,
+  ) {
+    updateState(newState);
+  }
 
-    function update(newState) {
-        console.log(newState, 'newState')
-        updateState(newState)
-        console.log('NEW STATEEEEEEEEEEEEEEEEEEEEEEEEEEEEE', state )
-    }
+  const [state, updateState] = useState(initialState);
 
-    const [state, updateState] = useState(initialState)
-
-    return (
-        <Context.Provider value={{state:state, update:update}}>
-            {props.children}
-        </Context.Provider>
-    )
+  return (
+    <Context.Provider
+      value={{
+        state: state,
+        update: update,
+      }}
+    >
+      {children}
+    </Context.Provider>
+  );
 }
 
-const Consumer = Context.Consumer
+const Consumer = Context.Consumer;
 
-export {Provider, Consumer, Context}
+export { Provider, Consumer, Context };

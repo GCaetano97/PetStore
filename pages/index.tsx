@@ -1,7 +1,5 @@
 import React from "react";
-import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
 import Link from "../src/Link";
 import Header from "../src/Header";
 import { Button } from "@material-ui/core";
@@ -18,26 +16,25 @@ export default function Index() {
           backgroundSize: "cover",
         }}
       >
-         <br/>
-        <div style={{marginTop: '20vh', marginLeft: '15vh'}}>
+        <br />
+        <div style={{ marginTop: "20vh", marginLeft: "15vh" }}>
           <Typography variant="h3">More than a friend</Typography>
           <Typography variant="h4">
             We know what{" "}
-            <Link href='/store' style={{textDecoration: 'none'}}>
-            <Button
-              variant="contained"
-              size="large"
-              style={{
-                backgroundColor: "rgba(166, 107, 18,.8)",
-                fontSize: "22px",
-              }}
-            >
-              you need
-            </Button>
+            <Link href="/store" style={{ textDecoration: "none" }}>
+              <Button
+                variant="contained"
+                size="large"
+                style={{
+                  backgroundColor: "rgba(166, 107, 18,.8)",
+                  fontSize: "22px",
+                }}
+              >
+                you need
+              </Button>
             </Link>
           </Typography>
         </div>
-        
       </div>
     </React.Fragment>
   );

@@ -5,40 +5,61 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import Link from "../src/Link";
 import { Paper, TextField, Button } from "@material-ui/core";
-import axios from 'axios'
-import {Context} from '../src/context'
-import { useRouter } from 'next/router'
+import axios from "axios";
+import { Context } from "../src/context";
+import { useRouter } from "next/router";
 
+interface state {
+  state: {
+    user: boolean;
+    username: string;
+    filter: string;
+    pets: Array<Object>;
+    modal: boolean;
+    modalMessage: string;
+  };
+  update: Function;
+}
 
 function Login() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const url = 'https://petstore.swagger.io/v2/user/login'
-  const state = useContext(Context)
-  const router = useRouter()
-
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const url = "https://petstore.swagger.io/v2/user/login";
+  const state: state = (useContext(Context) as unknown) as state;
+  const router = useRouter();
 
   async function handleLoginClick() {
     const loginObject = {
       username,
-      password
-    }
-    setUsername('')
-    setPassword('')
+      password,
+    };
+    setUsername("");
+    setPassword("");
 
-    try{
-      const res = await axios.get(url, {
+    try {
+      await axios.get(url, {
         params: {
           username: username,
-          password: password
-        }
-      })
-      state.update({...state.state, user: true, username: loginObject.username})
+          password: password,
+        },
+      });
+      state.update({
+        ...state.state,
+        modal: true,
+        modalMessage: `Welcome ${loginObject.username}`,
+      });
       setTimeout(() => {
-        router.push('/')
-      },500)
+        state.update({
+          ...state.state,
+          user: true,
+          username: loginObject.username,
+          modal: false,
+          modalMessage: "",
+        });
+        router.push("/");
+      }, 1500);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -74,7 +95,7 @@ function Login() {
                   label="Username"
                   name="username"
                   value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  onChange={(e) => setUsername(e.target.value)}
                   autoFocus
                 />
 
@@ -88,7 +109,7 @@ function Login() {
                   type="password"
                   autoFocus
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
 
                 <Button

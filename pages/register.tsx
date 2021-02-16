@@ -1,35 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Header from "../src/Header";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { Paper, TextField, Button } from "@material-ui/core";
-import axios from 'axios'
+import axios from "axios";
+import { Context } from "../src/context";
+import { useRouter } from "next/router";
+
+interface state {
+  state: {
+    user: boolean;
+    username: string;
+    filter: string;
+    pets: Array<Object>;
+    modal: boolean;
+    modalMessage: string;
+  };
+  update: Function;
+}
 
 function Register() {
+  const state: state = (useContext(Context) as unknown) as state;
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const url = 'https://petstore.swagger.io/v2/user'
+  const url = "https://petstore.swagger.io/v2/user";
 
   async function handleRegisterClick() {
     const registerObject = {
-      id: Math.floor(Math.random()*10000000),
+      id: Math.floor(Math.random() * 10000000),
       username: username,
       email: email,
       password: password,
-      userStatus: 0
+      userStatus: 0,
     };
-    console.log("register clicked");
-    console.log(registerObject);
-    
-    try{
-      const res = await axios.post(url, registerObject)
-      console.log(res)
+
+    try {
+      await axios.post(url, registerObject);
+      state.update({
+        ...state.state,
+        modal: true,
+        modalMessage: "Register was successful",
+      });
+      setTimeout(() => {
+        state.update({ ...state.state, modal: false, modalMessage: "" });
+        router.push("/login");
+      }, 1500);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-    
   }
 
   return (
@@ -60,6 +81,7 @@ function Register() {
                 }}
               >
                 <TextField
+                  required
                   variant="outlined"
                   margin="normal"
                   id="username"
@@ -71,6 +93,7 @@ function Register() {
                 />
 
                 <TextField
+                  required
                   variant="outlined"
                   margin="normal"
                   id="email"
@@ -82,6 +105,7 @@ function Register() {
                 />
 
                 <TextField
+                  required
                   variant="outlined"
                   margin="normal"
                   id="password"
@@ -94,6 +118,7 @@ function Register() {
                 />
 
                 <Button
+                  disabled={!(password && username && email)}
                   variant="contained"
                   color="primary"
                   style={{
@@ -106,6 +131,11 @@ function Register() {
                 >
                   Register Now
                 </Button>
+                {!(password && username && email) && (
+                  <Typography variant="caption" style={{ color: "red" }}>
+                    *All the fields are required
+                  </Typography>
+                )}
               </div>
             </div>
           </Box>

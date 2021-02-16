@@ -21,7 +21,7 @@ Register done, login done.
 
 Header again to put the settings and logout function. useState is async so some problems after everything is working like intended. (Minor problem -> Memory leak <> suspect router.)
 
-Starting settings.
+Starting settings. Settings has some problems with state and getting the data that the user already put in. Now all solved with useEffect. 
 
 
 (refactor context para menos rerender)
