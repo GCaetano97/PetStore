@@ -1,42 +1,56 @@
-import React from "react";
-import Typography from "@material-ui/core/Typography";
-import Link from "../src/Link";
-import Header from "../src/Header";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
+import React from 'react';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import Link from '../src/Link';
+import Header from '../src/Header';
 
-const rectangleStyle = {
-  width: "99.7vw",
-  minHeight: "40vh",
-  marginTop: "10px",
-};
+const useStyles = makeStyles(() => createStyles({
+  rectangleStyle: {
+    width: '99.7vw',
+    minHeight: '40vh',
+    marginTop: '10px',
+  },
+  presetationTextStyle: {
+    marginTop: '15px',
+  },
+  gridSpacer: {
+    marginBottom: '10px',
+    marginTop: '15px',
+  },
+}));
 
 export default function About() {
+  const classes = useStyles();
   return (
-    <React.Fragment>
+    <>
       <Header />
-      <div style={rectangleStyle}>
+      <div className={classes.rectangleStyle}>
         <Typography variant="h4" align="center">
-          {" "}
+          {' '}
           Welcome to FindAPet
         </Typography>
-        <Typography align="center" style={{ marginTop: "15px" }}>
+        <Typography align="center" className={classes.presetationTextStyle}>
           This is a exercise made with nextJS and TypeScript stylled with
           Material UI. The goal was to make a pet store with the help of swagger
           prebuilt API.
         </Typography>
         <Typography align="center">
-          If you'd like to see more projects like this you can check the{" "}
-          <Link href="https://github.com/GCaetano97">Github</Link> where this
+          If you&apos;d like to see more projects like this you can check the
+          {' '}
+          <Link href="https://github.com/GCaetano97">Github</Link>
+          {' '}
+          where this
           project is hosted!
         </Typography>
       </div>
-      <Paper style={rectangleStyle} elevation={3}>
+      <Paper className={classes.rectangleStyle} elevation={3}>
         <Grid container alignContent="center" alignItems="center" spacing={1}>
           <Grid
             item
             xs={12}
-            style={{ marginBottom: "10px", marginTop: "15px" }}
+            className={classes.gridSpacer}
           >
             <Typography variant="h4" align="center">
               Features
@@ -47,7 +61,7 @@ export default function About() {
               Login
             </Typography>
             <Typography>
-              Login is fully functional and due to the API it's possible to
+              Login is fully functional and due to the API it&apos;s possible to
               login using a dummy user and password.
             </Typography>
           </Grid>
@@ -72,6 +86,6 @@ export default function About() {
           </Grid>
         </Grid>
       </Paper>
-    </React.Fragment>
+    </>
   );
 }

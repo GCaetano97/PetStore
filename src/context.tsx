@@ -1,16 +1,21 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState } from 'react';
 
-let Context = createContext("");
+type Props = {
+  children: React.ReactNode
+}
 
-function Provider({ children }: any) {
+const Context = createContext({});
+
+function Provider({ children } : Props) {
   const initialState = {
     user: false,
-    username: "",
-    filter: "available",
+    username: '',
+    filter: 'available',
     pets: undefined,
     modal: false,
-    modalMessage: "",
+    modalMessage: '',
   };
+  const [state, updateState] = useState(initialState);
 
   function update(
     newState: React.SetStateAction<{
@@ -25,13 +30,11 @@ function Provider({ children }: any) {
     updateState(newState);
   }
 
-  const [state, updateState] = useState(initialState);
-
   return (
     <Context.Provider
       value={{
-        state: state,
-        update: update,
+        state,
+        update,
       }}
     >
       {children}
@@ -39,6 +42,6 @@ function Provider({ children }: any) {
   );
 }
 
-const Consumer = Context.Consumer;
+const { Consumer } = Context;
 
 export { Provider, Consumer, Context };

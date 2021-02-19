@@ -1,20 +1,28 @@
-import React from "react";
-import Header from "../src/Header";
-import StoreFilter from "../src/StoreFilter";
-import { Grid } from "@material-ui/core";
-import PetList from "../src/PetList";
+import React from 'react';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { Grid } from '@material-ui/core';
+import Header from '../src/Header';
+import StoreFilter from '../src/StoreFilter';
+import PetList from '../src/PetList';
+
+const useStyles = makeStyles(() => createStyles({
+  gridStyle: {
+    marginTop: '15px',
+  },
+}));
 
 function Store() {
+  const classes = useStyles();
   return (
-    <React.Fragment>
+    <>
       <Header />
-      <Grid container direction="row" style={{ marginTop: "15px" }} spacing={2}>
+      <Grid container direction="row" className={classes.gridStyle} spacing={2}>
         <StoreFilter />
         <Grid container item direction="column" xs={9}>
           <PetList />
         </Grid>
       </Grid>
-    </React.Fragment>
+    </>
   );
 }
 

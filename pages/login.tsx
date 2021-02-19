@@ -1,15 +1,43 @@
-import React, { useState, useContext } from "react";
-import Header from "../src/Header";
-import Container from "@material-ui/core/Container";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import Link from "../src/Link";
-import { Paper, TextField, Button } from "@material-ui/core";
-import axios from "axios";
-import { Context } from "../src/context";
-import { useRouter } from "next/router";
+import React, { useState, useContext } from 'react';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import { Paper, TextField, Button } from '@material-ui/core';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+import { Context } from '../src/context';
+import Link from '../src/Link';
+import Header from '../src/Header';
 
-interface state {
+const useStyles = makeStyles(() => createStyles({
+  paperStyle: {
+    borderRadius: '2%',
+    minHeight: '500px',
+  },
+  titleStyle: {
+    paddingTop: '7vh',
+  },
+  textFieldGroup: {
+    marginTop: '8vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  buttonStyle: {
+    margin: '0 auto',
+    borderRadius: '3%',
+    width: '21vh',
+    marginTop: '15px',
+  },
+  messageStyle: {
+    margin: '0 auto',
+    marginTop: '2vh',
+  },
+}));
+
+interface stateType {
   state: {
     user: boolean;
     username: string;
@@ -22,10 +50,11 @@ interface state {
 }
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const url = "https://petstore.swagger.io/v2/user/login";
-  const state: state = (useContext(Context) as unknown) as state;
+  const classes = useStyles();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const url = 'https://petstore.swagger.io/v2/user/login';
+  const state = (useContext(Context) as unknown) as stateType;
   const router = useRouter();
 
   async function handleLoginClick() {
@@ -33,14 +62,14 @@ function Login() {
       username,
       password,
     };
-    setUsername("");
-    setPassword("");
+    setUsername('');
+    setPassword('');
 
     try {
       await axios.get(url, {
         params: {
-          username: username,
-          password: password,
+          username,
+          password,
         },
       });
       state.update({
@@ -54,89 +83,82 @@ function Login() {
           user: true,
           username: loginObject.username,
           modal: false,
-          modalMessage: "",
+          modalMessage: '',
         });
-        router.push("/");
+        router.push('/');
       }, 1500);
-    } catch (error) {
-      console.log(error);
+    } catch (error: unknown) {
+      state.update({
+        ...state.state,
+        modal: true,
+        modalMessage: error,
+      });
+      setTimeout(() => {
+        state.update({ ...state.state, modal: false, modalMessage: '' });
+        router.push('/');
+      }, 1500);
     }
   }
 
   return (
-    <React.Fragment>
+    <>
       <Header />
       <Container maxWidth="sm">
-        <Paper elevation={3} style={{ borderRadius: "2%", minHeight: "500px" }}>
+        <Paper elevation={3} className={classes.paperStyle}>
           <Box my={4}>
             <Typography
               variant="h4"
               component="h1"
               align="center"
-              style={{ paddingTop: "5vh" }}
+              className={classes.titleStyle}
             >
               Login
             </Typography>
-            <div style={{ marginTop: "7vh" }}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  alignSelf: "center",
-                  marginTop: "16px",
-                }}
+            <div className={classes.textFieldGroup}>
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                id="username"
+                label="Username"
+                name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoFocus
+              />
+
+              <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                id="password"
+                label="Password"
+                name="password"
+                type="password"
+                autoFocus
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.buttonStyle}
+                onClick={() => handleLoginClick()}
               >
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  id="username"
-                  label="Username"
-                  name="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  autoFocus
-                />
-
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  id="password"
-                  label="Password"
-                  name="password"
-                  type="password"
-                  autoFocus
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-
-                <Button
-                  variant="contained"
-                  color="primary"
-                  style={{
-                    margin: "0 auto",
-                    borderRadius: "3%",
-                    width: "21vh",
-                    marginTop: "15px",
-                  }}
-                  onClick={() => handleLoginClick()}
-                >
-                  Login
-                </Button>
-                <Typography style={{ margin: "0 auto", marginTop: "2vh" }}>
-                  Not a member yet?
-                  <Link href="/register" color="secondary">
-                    Click here to register
-                  </Link>
-                </Typography>
-              </div>
+                Login
+              </Button>
+              <Typography className={classes.messageStyle}>
+                Not a member yet?
+                <Link href="/register" color="secondary">
+                  Click here to register
+                </Link>
+              </Typography>
             </div>
           </Box>
         </Paper>
       </Container>
-    </React.Fragment>
+    </>
   );
 }
 

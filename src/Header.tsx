@@ -1,12 +1,46 @@
-import { Toolbar, Typography, Menu, MenuItem } from "@material-ui/core";
-import Link from "./Link";
-import React, { useContext, useState } from "react";
-import { Context } from "./context";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import axios from "axios";
-import { useRouter } from "next/router";
+import {
+  Toolbar, Typography, Menu, MenuItem,
+} from '@material-ui/core';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import React, { useContext, useState } from 'react';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+import { Context } from './context';
+import Link from './Link';
 
-interface state {
+const useStyles = makeStyles(() => createStyles({
+  toolbar: {
+    display: 'flex',
+    backgroundColor: '#fff',
+  },
+  title: {
+    flex: 4,
+    textDecoration: 'none',
+    color: 'black',
+    '&:hover': {
+      textDecoration: 'none',
+    },
+  },
+  link: {
+    justifyContent: 'flex-end',
+    marginRight: '20px',
+    textDecoration: 'none',
+    color: 'black',
+    '&:hover': {
+      textDecoration: 'none',
+    },
+  },
+  finalLink: {
+    textDecoration: 'none',
+    color: 'black',
+    '&:hover': {
+      textDecoration: 'none',
+    },
+  },
+}));
+
+interface stateType {
   state: {
     user: boolean;
     username: string;
@@ -19,78 +53,67 @@ interface state {
 }
 
 function Header() {
-  const state: state = (useContext(Context) as unknown) as state;
-  const [anchorEl, setAnchorEl] = useState(null);
+  const classes = useStyles();
+  const state: stateType = (useContext(Context) as unknown) as stateType;
+  const [anchorEl, setAnchorEl] = useState<EventTarget | undefined>(undefined);
   const [logged, setLogged] = useState(state.state.user);
-  const url = "https://petstore.swagger.io/v2/user/logout";
+  const url = 'https://petstore.swagger.io/v2/user/logout';
   const router = useRouter();
 
-  const handleMouseOver = (e: {
-    currentTarget: React.SetStateAction<null>;
-  }) => {
-    setAnchorEl(e.currentTarget);
+  const handleMouseOver = (event: {target: EventTarget}) => {
+    setAnchorEl(event.target);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setAnchorEl(undefined);
   };
 
   const handleLogout = async () => {
     await axios.get(url);
     setLogged(false);
-    state.update({ modal: true, modalMessage: "We hope to see you soon!" });
+    state.update({ modal: true, modalMessage: 'We hope to see you soon!' });
     handleClose();
     setTimeout(() => {
       setLogged(false);
       state.update({
         ...state.state,
-        username: "",
+        username: '',
         user: false,
         modal: false,
-        modalMessage: "",
+        modalMessage: '',
       });
-      router.push("/");
+      router.push('/');
     }, 1500);
   };
 
   if (logged) {
     return (
       <Toolbar
-        style={{ display: "flex", backgroundColor: "#fff", position: "sticky" }}
+        className={classes.toolbar}
       >
         <Link
           href="/"
-          style={{ flex: 4, textDecoration: "none", color: "black" }}
+          className={classes.title}
         >
           <Typography>FindAPet</Typography>
         </Link>
         <Link
           href="/store"
-          style={{
-            justifyContent: "flex-end",
-            marginRight: "20px",
-            textDecoration: "none",
-            color: "black",
-          }}
+          className={classes.link}
         >
           <Typography>Store</Typography>
         </Link>
         <Link
           href="/about"
-          style={{
-            justifyContent: "flex-end",
-            marginRight: "20px",
-            textDecoration: "none",
-            color: "black",
-          }}
+          className={classes.link}
         >
           <Typography>About</Typography>
         </Link>
-        <Link href="/" style={{ textDecoration: "none", color: "black" }}>
-          <AccountCircleIcon onMouseOver={handleMouseOver} />
+        <Link href="/" className={classes.finalLink}>
+          <span onMouseOver={handleMouseOver} onFocus={handleMouseOver}><AccountCircleIcon /></span>
         </Link>
         <Menu
-          anchorEl={anchorEl}
+          anchorEl={anchorEl as Element}
           keepMounted
           open={Boolean(anchorEl)}
           onClose={handleClose}
@@ -98,13 +121,14 @@ function Header() {
           <MenuItem onClick={handleClose}>
             <Link
               href="/settings"
-              style={{ textDecoration: "none", color: "black" }}
               onClick={handleClose}
+              className={classes.finalLink}
             >
               Settings
             </Link>
           </MenuItem>
           <MenuItem
+            className={classes.finalLink}
             onClick={() => {
               handleLogout();
             }}
@@ -117,36 +141,26 @@ function Header() {
   }
 
   return (
-    <Toolbar style={{ display: "flex", backgroundColor: "#fff" }}>
+    <Toolbar className={classes.toolbar}>
       <Link
         href="/"
-        style={{ flex: 4, textDecoration: "none", color: "black" }}
+        className={classes.title}
       >
         <Typography>FindAPet</Typography>
       </Link>
       <Link
         href="/store"
-        style={{
-          justifyContent: "flex-end",
-          marginRight: "20px",
-          textDecoration: "none",
-          color: "black",
-        }}
+        className={classes.link}
       >
         <Typography>Store</Typography>
       </Link>
       <Link
         href="/about"
-        style={{
-          justifyContent: "flex-end",
-          marginRight: "20px",
-          textDecoration: "none",
-          color: "black",
-        }}
+        className={classes.link}
       >
         <Typography>About</Typography>
       </Link>
-      <Link href="/login" style={{ textDecoration: "none", color: "black" }}>
+      <Link href="/login" className={classes.finalLink}>
         <Typography>Login</Typography>
       </Link>
     </Toolbar>
