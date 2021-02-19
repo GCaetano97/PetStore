@@ -10,6 +10,7 @@ type NextComposedProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'hr
 
 const NextComposed = React.forwardRef<HTMLAnchorElement, NextComposedProps>((props, ref) => {
   const {
+    // eslint-disable-next-line react/prop-types
     as, href, replace, scroll, passHref, shallow, prefetch, ...other
   } = props;
 
@@ -23,6 +24,7 @@ const NextComposed = React.forwardRef<HTMLAnchorElement, NextComposedProps>((pro
       shallow={shallow}
       passHref={passHref}
     >
+      {/* eslint-disable-next-line react/jsx-props-no-spreading */ }
       <a ref={ref} {...other} />
     </NextLink>
   );
@@ -55,6 +57,7 @@ function Link(props: LinkProps) {
   });
 
   if (naked) {
+    // eslint-disable-next-line react/jsx-props-no-spreading
     return <NextComposed className={className} ref={innerRef} href={href} {...other} />;
   }
 
@@ -64,11 +67,13 @@ function Link(props: LinkProps) {
       className={className}
       ref={innerRef}
       href={href as string}
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...other}
     />
   );
 }
 
 export default React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => (
+  // eslint-disable-next-line react/jsx-props-no-spreading
   <Link {...props} innerRef={ref} />
 ));

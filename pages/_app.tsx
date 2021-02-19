@@ -32,6 +32,7 @@ export default function MyApp(props: AppProps) {
         <CssBaseline />
         <Provider>
           <TransitionsModal />
+          { /* eslint-disable-next-line react/jsx-props-no-spreading */}
           <Component {...pageProps} />
         </Provider>
       </ThemeProvider>
