@@ -2,8 +2,8 @@ import React from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
-import Link from '../src/Link';
-import Header from '../src/Header';
+import Link from 'next/link';
+import Header from '../src/layout/Header';
 
 const useStyles = makeStyles(() => createStyles({
   heroStyle: {
@@ -15,12 +15,13 @@ const useStyles = makeStyles(() => createStyles({
     marginTop: '20vh',
     marginLeft: '15vh',
   },
-  heroLinkStyle: {
-    textDecoration: 'none',
-  },
   heroButtonStyle: {
-    backgroundColor: 'rgba(166, 107, 18,.8)',
+    backgroundColor: '#c4811c',
     fontSize: '22px',
+    textDecoration: 'none',
+    '&:hover': {
+      backgroundColor: '#da9023',
+    },
   },
 }));
 
@@ -36,7 +37,7 @@ export default function Index() {
           <Typography variant="h4">
             We know what
             {' '}
-            <Link href="/store" className={classes.heroLinkStyle}>
+            <Link href="/store">
               <Button
                 variant="contained"
                 size="large"

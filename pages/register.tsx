@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -6,8 +6,9 @@ import Box from '@material-ui/core/Box';
 import { Paper, TextField, Button } from '@material-ui/core';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { Context } from '../src/context';
-import Header from '../src/Header';
+import { useDispatch } from 'react-redux';
+import Header from '../src/layout/Header';
+import { setModal, setModalMessage } from '../src/store/modal/modalSlice';
 
 const useStyles = makeStyles(() => createStyles({
   paperStyle: {
@@ -35,21 +36,9 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-interface stateType {
-  state: {
-    user: boolean;
-    username: string;
-    filter: string;
-    pets: Array<Object>;
-    modal: boolean;
-    modalMessage: string;
-  };
-  update: Function;
-}
-
 function Register() {
+  const dispatch = useDispatch();
   const classes = useStyles();
-  const state = (useContext(Context) as unknown) as stateType;
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -67,26 +56,34 @@ function Register() {
 
     try {
       await axios.post(url, registerObject);
-      state.update({
-        ...state.state,
-        modal: true,
-        modalMessage: 'Register was successful',
-      });
+      dispatch(setModal(true));
+      dispatch(setModalMessage('Register was successful'));
       setTimeout(() => {
-        state.update({ ...state.state, modal: false, modalMessage: '' });
+        dispatch(setModalMessage(''));
+        dispatch(setModal(false));
         router.push('/login');
       }, 1500);
     } catch (error: unknown) {
-      state.update({
-        ...state.state,
-        modal: true,
-        modalMessage: error,
-      });
+      dispatch(setModal(true));
+      dispatch(setModalMessage('There was an error, please try again'));
       setTimeout(() => {
-        state.update({ ...state.state, modal: false, modalMessage: '' });
+        dispatch(setModal(false));
+        dispatch(setModalMessage(''));
         router.push('/');
       }, 1500);
     }
+  }
+
+  function handleUsernameChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setUsername(e.target.value);
+  }
+
+  function handlePasswordChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setPassword(e.target.value);
+  }
+
+  function handleEmailChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setEmail(e.target.value);
   }
 
   return (
@@ -116,7 +113,7 @@ function Register() {
                 name="username"
                 autoFocus
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
               />
 
               <TextField
@@ -128,7 +125,7 @@ function Register() {
                 name="email"
                 autoFocus
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
               />
 
               <TextField
@@ -141,7 +138,7 @@ function Register() {
                 type="password"
                 autoFocus
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
               />
 
               <Button
@@ -149,7 +146,7 @@ function Register() {
                 variant="contained"
                 color="primary"
                 className={classes.buttonStyle}
-                onClick={() => handleRegisterClick()}
+                onClick={handleRegisterClick}
               >
                 Register Now
               </Button>

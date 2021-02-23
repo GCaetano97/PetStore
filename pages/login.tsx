@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -6,9 +6,11 @@ import Box from '@material-ui/core/Box';
 import { Paper, TextField, Button } from '@material-ui/core';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { Context } from '../src/context';
-import Link from '../src/Link';
-import Header from '../src/Header';
+import Link from 'next/link';
+import { useDispatch } from 'react-redux';
+import Header from '../src/layout/Header';
+import { setUser, setUsername } from '../src/store/user/userSlice';
+import { setModal, setModalMessage } from '../src/store/modal/modalSlice';
 
 const useStyles = makeStyles(() => createStyles({
   paperStyle: {
@@ -35,26 +37,21 @@ const useStyles = makeStyles(() => createStyles({
     margin: '0 auto',
     marginTop: '2vh',
   },
+  linkStyle: {
+    textDecoration: 'underline',
+    '&:hover': {
+      color: 'blue',
+      cursor: 'pointer',
+    },
+  },
 }));
 
-interface stateType {
-  state: {
-    user: boolean;
-    username: string;
-    filter: string;
-    pets: Array<Object>;
-    modal: boolean;
-    modalMessage: string;
-  };
-  update: Function;
-}
-
 function Login() {
+  const dispatch = useDispatch();
   const classes = useStyles();
-  const [username, setUsername] = useState('');
+  const [username, setUsernameState] = useState('');
   const [password, setPassword] = useState('');
   const url = 'https://petstore.swagger.io/v2/user/login';
-  const state = (useContext(Context) as unknown) as stateType;
   const router = useRouter();
 
   async function handleLoginClick() {
@@ -62,7 +59,7 @@ function Login() {
       username,
       password,
     };
-    setUsername('');
+    setUsernameState('');
     setPassword('');
 
     try {
@@ -72,32 +69,33 @@ function Login() {
           password,
         },
       });
-      state.update({
-        ...state.state,
-        modal: true,
-        modalMessage: `Welcome ${loginObject.username}`,
-      });
+      dispatch(setModal(true));
+      dispatch(setModalMessage(`Welcome ${loginObject.username}`));
       setTimeout(() => {
-        state.update({
-          ...state.state,
-          user: true,
-          username: loginObject.username,
-          modal: false,
-          modalMessage: '',
-        });
+        dispatch(setUser(true));
+        dispatch(setUsername(loginObject.username));
+        dispatch(setModalMessage(''));
+        dispatch(setModal(false));
         router.push('/');
       }, 1500);
     } catch (error: unknown) {
-      state.update({
-        ...state.state,
-        modal: true,
-        modalMessage: error,
-      });
+      dispatch(setModal(true));
+      dispatch(setModalMessage('There was an error, please try again'));
+
       setTimeout(() => {
-        state.update({ ...state.state, modal: false, modalMessage: '' });
+        dispatch(setModalMessage(''));
+        dispatch(setModal(false));
         router.push('/');
       }, 1500);
     }
+  }
+
+  function handleUsernameChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setUsernameState(e.target.value);
+  }
+
+  function handlePasswordChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setPassword(e.target.value);
   }
 
   return (
@@ -123,7 +121,7 @@ function Login() {
                 label="Username"
                 name="username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
                 autoFocus
               />
 
@@ -137,21 +135,21 @@ function Login() {
                 type="password"
                 autoFocus
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
               />
 
               <Button
                 variant="contained"
                 color="primary"
                 className={classes.buttonStyle}
-                onClick={() => handleLoginClick()}
+                onClick={handleLoginClick}
               >
                 Login
               </Button>
               <Typography className={classes.messageStyle}>
                 Not a member yet?
-                <Link href="/register" color="secondary">
-                  Click here to register
+                <Link href="/register">
+                  <span className={classes.linkStyle}> Click here to register</span>
                 </Link>
               </Typography>
             </div>

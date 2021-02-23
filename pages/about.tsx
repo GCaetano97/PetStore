@@ -3,8 +3,8 @@ import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import Link from '../src/Link';
-import Header from '../src/Header';
+import Link from 'next/link';
+import Header from '../src/layout/Header';
 
 const useStyles = makeStyles(() => createStyles({
   rectangleStyle: {
@@ -18,6 +18,13 @@ const useStyles = makeStyles(() => createStyles({
   gridSpacer: {
     marginBottom: '10px',
     marginTop: '15px',
+  },
+  linkStyle: {
+    textDecoration: 'underline',
+    '&:hover': {
+      cursor: 'pointer',
+      color: 'blue',
+    },
   },
 }));
 
@@ -39,7 +46,11 @@ export default function About() {
         <Typography align="center">
           If you&apos;d like to see more projects like this you can check the
           {' '}
-          <Link href="https://github.com/GCaetano97">Github</Link>
+          <Link href="https://github.com/GCaetano97">
+            <span className={classes.linkStyle}>
+              Github
+            </span>
+          </Link>
           {' '}
           where this
           project is hosted!

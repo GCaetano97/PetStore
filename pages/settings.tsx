@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -9,10 +9,12 @@ import Button from '@material-ui/core/Button';
 import useSWR from 'swr';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import Header from '../src/Header';
+import { useDispatch, useSelector } from 'react-redux';
+import Header from '../src/layout/Header';
 import fetcher from '../src/fetcher';
-import { Context } from '../src/context';
-import Spinner from '../src/Spinner';
+import Spinner from '../src/components/Spinner';
+import { userSelector } from '../src/store/user/userSlice';
+import { setModal, setModalMessage } from '../src/store/modal/modalSlice';
 
 const useStyles = makeStyles(() => createStyles({
   paperStyle: {
@@ -41,18 +43,6 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-interface stateType {
-  state: {
-    user: boolean;
-    username: string;
-    filter: string;
-    pets: Array<Object>;
-    modal: boolean;
-    modalMessage: string;
-  };
-  update: Function;
-}
-
 interface userObjectType {
   username: string,
   firstName?: string,
@@ -78,14 +68,15 @@ function SettingsLayout({ children }: Props) {
 }
 
 export default function About() {
+  const dispatch = useDispatch();
+  const userUsername = useSelector(userSelector).username;
   const classes = useStyles();
   const router = useRouter();
-  const state = (useContext(Context) as unknown) as stateType;
   const { data, error } = useSWR(
-    `https://petstore.swagger.io/v2/user/${state.state.username}`,
+    `https://petstore.swagger.io/v2/user/${userUsername}`,
     fetcher,
   );
-  const url = `https://petstore.swagger.io/v2/user/${state.state.username}`;
+  const url = `https://petstore.swagger.io/v2/user/${userUsername}`;
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -138,23 +129,19 @@ export default function About() {
 
     try {
       await axios.put(url, userObject);
-      state.update({
-        ...state.state,
-        modal: true,
-        modalMessage: 'Changes saved',
-      });
+      dispatch(setModal(true));
+      dispatch(setModalMessage('Changes saved'));
       setTimeout(() => {
-        state.update({ ...state.state, modal: false, modalMessage: '' });
+        dispatch(setModal(false));
+        dispatch(setModalMessage(''));
         router.push('/');
       }, 1500);
     } catch (error2: unknown) {
-      state.update({
-        ...state.state,
-        modal: true,
-        modalMessage: error2,
-      });
+      dispatch(setModal(true));
+      dispatch(setModalMessage('There was an error, please try again'));
       setTimeout(() => {
-        state.update({ ...state.state, modal: false, modalMessage: '' });
+        dispatch(setModal(false));
+        dispatch(setModalMessage(''));
         router.push('/');
       }, 1500);
     }
@@ -174,6 +161,30 @@ export default function About() {
 
   if (!data) {
     return <SettingsLayout><Spinner /></SettingsLayout>;
+  }
+
+  function handleUsernameChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setUsername(e.target.value);
+  }
+
+  function handleFirstNameChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setFirstName(e.target.value);
+  }
+
+  function handleLastNameChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setLastName(e.target.value);
+  }
+
+  function handleEmailChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setEmail(e.target.value);
+  }
+
+  function handlePasswordChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setPassword(e.target.value);
+  }
+
+  function handlePhoneChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setPhone(e.target.value);
   }
 
   return (
@@ -198,7 +209,7 @@ export default function About() {
                 label="Username"
                 name="username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleUsernameChange}
                 autoFocus
               />
               <TextField
@@ -208,7 +219,7 @@ export default function About() {
                 label="First Name"
                 name="firstName"
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={handleFirstNameChange}
                 autoFocus
               />
               <TextField
@@ -218,7 +229,7 @@ export default function About() {
                 label="Last Name"
                 name="lastName"
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={handleLastNameChange}
                 autoFocus
               />
               <TextField
@@ -229,7 +240,7 @@ export default function About() {
                 label="Email"
                 name="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 autoFocus
               />
               <TextField
@@ -242,7 +253,7 @@ export default function About() {
                 type="password"
                 autoFocus
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
               />
               <TextField
                 variant="outlined"
@@ -251,7 +262,7 @@ export default function About() {
                 label="Phone"
                 name="phone"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={handlePhoneChange}
                 autoFocus
               />
 
@@ -259,7 +270,7 @@ export default function About() {
                 variant="contained"
                 color="primary"
                 className={classes.buttonStyle}
-                onClick={() => handleSubmitClick()}
+                onClick={handleSubmitClick}
               >
                 Submit
               </Button>
