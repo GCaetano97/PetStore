@@ -79,7 +79,7 @@ const PetCard = ({ animal }: {animal: petObject}) => {
   const [show, setShow] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  const handleOrderClick = async () => {
+  const handleOrderClick = React.useCallback(async () => {
     const myDate = new Date();
     const newDate = new Date(myDate);
     newDate.setHours(newDate.getHours() + 1);
@@ -101,18 +101,18 @@ const PetCard = ({ animal }: {animal: petObject}) => {
       dispatch(setModal(false));
       dispatch(setModalMessage(''));
     }, 1500);
-  };
+  }, [animal.id, dispatch, quantity]);
 
-  function handleMinusClick() {
+  const handleMinusClick = React.useCallback(() => {
     if (quantity === 1) {
       return;
     }
     setQuantity(quantity - 1);
-  }
+  }, [quantity]);
 
-  function handlePlusClick() {
+  const handlePlusClick = React.useCallback(() => {
     setQuantity(quantity + 1);
-  }
+  }, [quantity]);
 
   function cardMouseOver() {
     setShow(true);

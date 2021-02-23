@@ -45,7 +45,7 @@ function Register() {
   const [email, setEmail] = useState('');
   const url = 'https://petstore.swagger.io/v2/user';
 
-  async function handleRegisterClick() {
+  const handleRegisterClick = React.useCallback(async () => {
     const registerObject = {
       id: Math.floor(Math.random() * 10000000),
       username,
@@ -72,7 +72,7 @@ function Register() {
         router.push('/');
       }, 1500);
     }
-  }
+  }, [dispatch, email, password, router, username]);
 
   function handleUsernameChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
     setUsername(e.target.value);

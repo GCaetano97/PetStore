@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-export default function About() {
+function About() {
   const classes = useStyles();
   return (
     <>
@@ -100,3 +100,5 @@ export default function About() {
     </>
   );
 }
+
+export default About;

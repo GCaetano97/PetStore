@@ -40,7 +40,7 @@ const PetList = () => {
       }
       dispatch(setPets(data));
     }
-  }, [data]);
+  }, [data, dispatch]);
 
   if (error) return <div>failed to load</div>;
   if (!data) return <Spinner />;

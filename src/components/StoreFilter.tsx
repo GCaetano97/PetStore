@@ -31,10 +31,10 @@ const StoreFilter = () => {
   const classes = useStyles();
   const [filter, setFilterStore] = useState(stateFilter);
 
-  function handleOnChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleOnChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setFilter(e.target.value));
     setFilterStore(e.target.value);
-  }
+  }, [dispatch]);
 
   return (
     <Grid container item direction="column" xs={2}>

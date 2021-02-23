@@ -99,7 +99,7 @@ export default function About() {
     }
   }, [data]);
 
-  const handleSubmitClick = async () => {
+  const handleSubmitClick = React.useCallback(async () => {
     const userObject: userObjectType = {
       username,
       firstName,
@@ -145,7 +145,9 @@ export default function About() {
         router.push('/');
       }, 1500);
     }
-  };
+  },
+  [dispatch, email, firstName, id, lastName, password, phone, router, url, userStatus, username]);
+
   if (error) {
     return (
       <SettingsLayout>

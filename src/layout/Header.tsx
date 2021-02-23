@@ -55,15 +55,15 @@ function Header() {
   const url: string = 'https://petstore.swagger.io/v2/user/logout';
   const router = useRouter();
 
-  const handleMouseOver = (event: {target: EventTarget}) => {
+  const handleMouseOver = React.useCallback((event: {target: EventTarget}) => {
     setAnchorEl(event.target);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     setAnchorEl(undefined);
-  };
+  }, []);
 
-  const handleLogout = async () => {
+  const handleLogout = React.useCallback(async () => {
     await axios.get(url);
     dispatch(setModal(true));
     dispatch(setModalMessage('We hope to see you soon!'));
@@ -75,7 +75,7 @@ function Header() {
       dispatch(setModalMessage(''));
       router.push('/');
     }, 1500);
-  };
+  }, [dispatch, handleClose, router]);
 
   if (user) {
     return (

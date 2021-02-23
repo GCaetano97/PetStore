@@ -54,7 +54,7 @@ function Login() {
   const url = 'https://petstore.swagger.io/v2/user/login';
   const router = useRouter();
 
-  async function handleLoginClick() {
+  const handleLoginClick = React.useCallback(async () => {
     const loginObject = {
       username,
       password,
@@ -88,7 +88,7 @@ function Login() {
         router.push('/');
       }, 1500);
     }
-  }
+  }, [dispatch, password, router, username]);
 
   function handleUsernameChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
     setUsernameState(e.target.value);
