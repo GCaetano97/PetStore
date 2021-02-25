@@ -2,16 +2,16 @@ import {
   Toolbar, Typography, Menu, MenuItem,
 } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
-import { userSelector, setUser, setUsername } from '../store/user/userSlice';
-import { setModal, setModalMessage } from '../store/modal/modalSlice';
-
-import TransitionsModal from './Modal';
+import { Display, DisplayNone } from '../store/actions/notificationActions';
+import { Logout } from '../store/actions/userActions';
+import { IState } from '../types';
+import Modal from './Modal';
 
 const useStyles = makeStyles(() => createStyles({
   toolbar: {
@@ -49,11 +49,16 @@ const useStyles = makeStyles(() => createStyles({
 
 function Header() {
   const dispatch = useDispatch();
-  const { user } = useSelector(userSelector);
+  const user = useSelector((state: IState) => state.userReducer.user);
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<EventTarget | undefined>(undefined);
   const url: string = 'https://petstore.swagger.io/v2/user/logout';
   const router = useRouter();
+  const timer: React.MutableRefObject<undefined | number> = useRef(undefined);
+
+  useEffect(() => () => {
+    clearTimeout(timer.current);
+  }, [timer]);
 
   const handleMouseOver = React.useCallback((event: {target: EventTarget}) => {
     setAnchorEl(event.target);
@@ -64,15 +69,12 @@ function Header() {
   }, []);
 
   const handleLogout = React.useCallback(async () => {
-    await axios.get(url);
-    dispatch(setModal(true));
-    dispatch(setModalMessage('We hope to see you soon!'));
     handleClose();
-    setTimeout(() => {
-      dispatch(setUsername(''));
-      dispatch(setUser(false));
-      dispatch(setModal(false));
-      dispatch(setModalMessage(''));
+    await axios.get(url);
+    dispatch(Display('We hope to see you soon!'));
+    timer.current = window.setTimeout(() => {
+      dispatch(DisplayNone());
+      dispatch(Logout());
       router.push('/');
     }, 1500);
   }, [dispatch, handleClose, router]);
@@ -133,7 +135,7 @@ function Header() {
             </MenuItem>
           </Menu>
         </Toolbar>
-        <TransitionsModal />
+        <Modal />
       </>
     );
   }
@@ -160,9 +162,9 @@ function Header() {
           <Typography className={classes.finalLink}>Login</Typography>
         </Link>
       </Toolbar>
-      <TransitionsModal />
+      <Modal />
     </>
   );
 }
 
-export default Header;
+export default React.memo(Header);

@@ -4,19 +4,8 @@ import { AppProps } from 'next/app';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
 import theme from '../src/theme';
-import userSliceReducer from '../src/store/user/userSlice';
-import modalSliceReducer from '../src/store/modal/modalSlice';
-import petsSliceReducer from '../src/store/pets/petsSlice';
-
-const store = configureStore({
-  reducer: {
-    userStore: userSliceReducer,
-    modalStore: modalSliceReducer,
-    petsStore: petsSliceReducer,
-  },
-});
+import store from '../src/store/store';
 
 export default function MyApp(props: AppProps) {
   const { Component, pageProps } = props;

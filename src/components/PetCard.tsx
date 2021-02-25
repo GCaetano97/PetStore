@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import {
   Card,
@@ -15,26 +15,8 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { useSelector, useDispatch } from 'react-redux';
 import Spinner from './Spinner';
-import { userSelector } from '../store/user/userSlice';
-import { petsSelector } from '../store/pets/petsSlice';
-import { setModal, setModalMessage } from '../store/modal/modalSlice';
-
-interface petObject {
-  id: number;
-  category: {
-    id: number;
-    name: string;
-  };
-  name: string;
-  photoUrls: [string];
-  tags: [
-    {
-      id: number;
-      name: string;
-    },
-  ];
-  status: string;
-}
+import { IPet, IState } from '../types';
+import { Display, DisplayNone } from '../store/actions/notificationActions';
 
 const useStyles = makeStyles(() => createStyles({
   gridSpacing: {
@@ -71,13 +53,22 @@ const useStyles = makeStyles(() => createStyles({
   },
 }));
 
-const PetCard = ({ animal }: {animal: petObject}) => {
+interface AnimalProps {
+  animal: IPet,
+}
+
+const PetCard: React.FC<AnimalProps> = ({ animal }: AnimalProps) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { user } = useSelector(userSelector);
-  const { filter } = useSelector(petsSelector);
+  const user = useSelector((state: IState) => state.userReducer.user);
+  const filter = useSelector((state: IState) => state.petReducer.filter);
   const [show, setShow] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const timer: React.MutableRefObject<undefined | number> = useRef(undefined);
+
+  useEffect(() => () => {
+    clearTimeout(timer.current);
+  }, [timer]);
 
   const handleOrderClick = React.useCallback(async () => {
     const myDate = new Date();
@@ -95,40 +86,35 @@ const PetCard = ({ animal }: {animal: petObject}) => {
       'https://petstore.swagger.io/v2/store/order',
       orderObject,
     );
-    dispatch(setModal(true));
-    dispatch(setModalMessage('Order placed!'));
-    setTimeout(() => {
-      dispatch(setModal(false));
-      dispatch(setModalMessage(''));
+    dispatch(Display('Order placed!'));
+    timer.current = window.setTimeout(() => {
+      dispatch(DisplayNone());
     }, 1500);
   }, [animal.id, dispatch, quantity]);
 
   const handleMinusClick = React.useCallback(() => {
-    if (quantity === 1) {
-      return;
-    }
-    setQuantity(quantity - 1);
-  }, [quantity]);
+    setQuantity((prevQuantity) => prevQuantity - 1);
+  }, []);
 
   const handlePlusClick = React.useCallback(() => {
-    setQuantity(quantity + 1);
-  }, [quantity]);
+    setQuantity((prevQuantity) => prevQuantity + 1);
+  }, []);
 
-  function cardMouseOver() {
+  const handleMouseOver = React.useCallback(() => {
     setShow(true);
-  }
+  }, []);
 
-  function cardMouseLeave() {
+  const handleMouseLeave = React.useCallback(() => {
     setShow(false);
-  }
+  }, []);
 
   return (
 
     <Grid item xs={3} className={classes.gridSpacing}>
       <Card
         className={classes.card}
-        onMouseOver={cardMouseOver}
-        onMouseLeave={cardMouseLeave}
+        onMouseOver={handleMouseOver}
+        onMouseLeave={handleMouseLeave}
       >
         <CardActionArea className={classes.cardActionArea}>
           {animal.photoUrls.length >= 1 ? (
@@ -147,13 +133,22 @@ const PetCard = ({ animal }: {animal: petObject}) => {
         <CardActions>
           {show && user && !(filter !== 'available') && (
             <>
-              <RemoveIcon
-                className={classes.buttonsOrder}
-                onClick={handleMinusClick}
-              />
+              {quantity > 1
+            && (
+            <RemoveIcon
+              className={classes.buttonsOrder}
+              onClick={handleMinusClick}
+            />
+            )}
+              {quantity <= 1
+              && (
+                <RemoveIcon
+                  className={classes.buttonsOrder}
+                />
+              )}
               <Typography className={classes.quantityText}>{quantity}</Typography>
               <AddIcon className={classes.buttonsOrder} onClick={handlePlusClick} />
-              <Button onClick={() => handleOrderClick()}>Order</Button>
+              <Button onClick={handleOrderClick}>Order</Button>
             </>
           )}
         </CardActions>
@@ -163,4 +158,4 @@ const PetCard = ({ animal }: {animal: petObject}) => {
   );
 };
 
-export default PetCard;
+export default React.memo(PetCard);

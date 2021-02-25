@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -13,8 +13,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Header from '../src/layout/Header';
 import fetcher from '../src/fetcher';
 import Spinner from '../src/components/Spinner';
-import { userSelector } from '../src/store/user/userSlice';
-import { setModal, setModalMessage } from '../src/store/modal/modalSlice';
+import { Display, DisplayNone } from '../src/store/actions/notificationActions';
+import { IState } from '../src/types';
 
 const useStyles = makeStyles(() => createStyles({
   paperStyle: {
@@ -69,7 +69,7 @@ function SettingsLayout({ children }: Props) {
 
 export default function About() {
   const dispatch = useDispatch();
-  const userUsername = useSelector(userSelector).username;
+  const userUsername = useSelector((state: IState) => state.userReducer.username);
   const classes = useStyles();
   const router = useRouter();
   const { data, error } = useSWR(
@@ -85,6 +85,7 @@ export default function About() {
   const [phone, setPhone] = useState('');
   const [id, setId] = useState('');
   const [userStatus, setUserStatus] = useState(0);
+  const timer: React.MutableRefObject<undefined | number> = useRef(undefined);
 
   useEffect(() => {
     if (data) {
@@ -98,6 +99,10 @@ export default function About() {
       setUserStatus(data.userStatus ? data.userStatus : '');
     }
   }, [data]);
+
+  useEffect(() => () => {
+    clearTimeout(timer.current);
+  }, [timer]);
 
   const handleSubmitClick = React.useCallback(async () => {
     const userObject: userObjectType = {
@@ -129,19 +134,15 @@ export default function About() {
 
     try {
       await axios.put(url, userObject);
-      dispatch(setModal(true));
-      dispatch(setModalMessage('Changes saved'));
-      setTimeout(() => {
-        dispatch(setModal(false));
-        dispatch(setModalMessage(''));
+      dispatch(Display('Changes saved'));
+      timer.current = window.setTimeout(() => {
+        dispatch(DisplayNone());
         router.push('/');
       }, 1500);
     } catch (error2: unknown) {
-      dispatch(setModal(true));
-      dispatch(setModalMessage('There was an error, please try again'));
-      setTimeout(() => {
-        dispatch(setModal(false));
-        dispatch(setModalMessage(''));
+      dispatch(Display('There was an error, please try again'));
+      timer.current = window.setTimeout(() => {
+        dispatch(DisplayNone());
         router.push('/');
       }, 1500);
     }

@@ -1,56 +1,29 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import useSWR from 'swr';
 import { Grid } from '@material-ui/core';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import fetcher from '../fetcher';
 import PetCard from './PetCard';
 import Spinner from './Spinner';
-import { petsSelector, setPets } from '../store/pets/petsSlice';
+import { IPet, IState } from '../types';
 
-interface petObject {
-  id: number;
-  category: {
-    id: number;
-    name: string;
-  };
-  name: string;
-  photoUrls: [string];
-  tags: [
-    {
-      id: number;
-      name: string;
-    },
-  ];
-  status: string;
-}
-
-const PetList = () => {
-  const dispatch = useDispatch();
-  const { pets } = useSelector(petsSelector);
-  const { filter } = useSelector(petsSelector);
-  const { data, error } = useSWR<petObject[]>(
+const PetList: React.FC = () => {
+  const filter = useSelector((state: IState) => state.petReducer.filter);
+  const { data, error } = useSWR<IPet[]>(
     `https://petstore.swagger.io/v2/pet/findByStatus?status=${filter}`,
     fetcher,
   );
 
-  useEffect(() => {
-    if (data) {
-      if (data.length > 32) {
-        data.length = 32;
-      }
-      dispatch(setPets(data));
-    }
-  }, [data, dispatch]);
+  // slice swr
 
   if (error) return <div>failed to load</div>;
   if (!data) return <Spinner />;
 
   return (
     <Grid container direction="row">
-      {pets.map((animal: petObject, index: number) => (
+      {data.map((animal: IPet) => (
         <React.Fragment
-          // eslint-disable-next-line react/no-array-index-key
-          key={`${animal.name}+${index}`}
+          key={animal.id}
         >
           <PetCard animal={animal} />
         </React.Fragment>
@@ -59,4 +32,4 @@ const PetList = () => {
   );
 };
 
-export default PetList;
+export default React.memo(PetList);

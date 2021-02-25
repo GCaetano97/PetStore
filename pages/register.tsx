@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import Header from '../src/layout/Header';
-import { setModal, setModalMessage } from '../src/store/modal/modalSlice';
+import { Display, DisplayNone } from '../src/store/actions/notificationActions';
 
 const useStyles = makeStyles(() => createStyles({
   paperStyle: {
@@ -44,6 +44,11 @@ function Register() {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const url = 'https://petstore.swagger.io/v2/user';
+  const timer: React.MutableRefObject<undefined | number> = useRef(undefined);
+
+  useEffect(() => () => {
+    clearTimeout(timer.current);
+  }, [timer]);
 
   const handleRegisterClick = React.useCallback(async () => {
     const registerObject = {
@@ -56,19 +61,15 @@ function Register() {
 
     try {
       await axios.post(url, registerObject);
-      dispatch(setModal(true));
-      dispatch(setModalMessage('Register was successful'));
-      setTimeout(() => {
-        dispatch(setModalMessage(''));
-        dispatch(setModal(false));
+      dispatch(Display('Register was successful'));
+      timer.current = window.setTimeout(() => {
+        dispatch(DisplayNone());
         router.push('/login');
       }, 1500);
     } catch (error: unknown) {
-      dispatch(setModal(true));
-      dispatch(setModalMessage('There was an error, please try again'));
-      setTimeout(() => {
-        dispatch(setModal(false));
-        dispatch(setModalMessage(''));
+      dispatch(Display('There was an error, please try again'));
+      timer.current = window.setTimeout(() => {
+        dispatch(DisplayNone());
         router.push('/');
       }, 1500);
     }

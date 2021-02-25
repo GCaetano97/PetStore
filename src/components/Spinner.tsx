@@ -17,10 +17,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const Spinner = () => {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
-      <CircularProgress />
-    </div>
+    <CircularProgress className={classes.root} />
   );
 };
 
-export default Spinner;
+export default React.memo(Spinner);

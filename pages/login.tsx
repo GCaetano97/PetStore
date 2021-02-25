@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -7,10 +7,10 @@ import { Paper, TextField, Button } from '@material-ui/core';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
+import { useDispatch, batch } from 'react-redux';
 import Header from '../src/layout/Header';
-import { setUser, setUsername } from '../src/store/user/userSlice';
-import { setModal, setModalMessage } from '../src/store/modal/modalSlice';
+import { Login as LoginAction } from '../src/store/actions/userActions';
+import { Display, DisplayNone } from '../src/store/actions/notificationActions';
 
 const useStyles = makeStyles(() => createStyles({
   paperStyle: {
@@ -53,6 +53,11 @@ function Login() {
   const [password, setPassword] = useState('');
   const url = 'https://petstore.swagger.io/v2/user/login';
   const router = useRouter();
+  const timer: React.MutableRefObject<undefined | number> = useRef(undefined);
+
+  useEffect(() => () => {
+    clearTimeout(timer.current);
+  }, [timer]);
 
   const handleLoginClick = React.useCallback(async () => {
     const loginObject = {
@@ -69,22 +74,18 @@ function Login() {
           password,
         },
       });
-      dispatch(setModal(true));
-      dispatch(setModalMessage(`Welcome ${loginObject.username}`));
-      setTimeout(() => {
-        dispatch(setUser(true));
-        dispatch(setUsername(loginObject.username));
-        dispatch(setModalMessage(''));
-        dispatch(setModal(false));
+      dispatch(Display(`Welcome ${loginObject.username}`));
+      timer.current = window.setTimeout(() => {
+        batch(() => {
+          dispatch(DisplayNone());
+          dispatch(LoginAction(loginObject.username));
+        });
         router.push('/');
       }, 1500);
     } catch (error: unknown) {
-      dispatch(setModal(true));
-      dispatch(setModalMessage('There was an error, please try again'));
-
-      setTimeout(() => {
-        dispatch(setModalMessage(''));
-        dispatch(setModal(false));
+      Display('There was an error, please try again');
+      timer.current = window.setTimeout(() => {
+        dispatch(DisplayNone());
         router.push('/');
       }, 1500);
     }

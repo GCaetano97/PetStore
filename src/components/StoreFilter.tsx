@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import {
   Grid,
@@ -10,7 +10,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { petsSelector, setFilter } from '../store/pets/petsSlice';
+import { ChangeFilter } from '../store/actions/petActions';
+import { IState } from '../types';
 
 const useStyles = makeStyles(() => createStyles({
   paper: {
@@ -27,13 +28,11 @@ const useStyles = makeStyles(() => createStyles({
 
 const StoreFilter = () => {
   const dispatch = useDispatch();
-  const stateFilter = useSelector(petsSelector).filter;
+  const filter = useSelector((state: IState) => state.petReducer.filter);
   const classes = useStyles();
-  const [filter, setFilterStore] = useState(stateFilter);
 
   const handleOnChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setFilter(e.target.value));
-    setFilterStore(e.target.value);
+    dispatch(ChangeFilter(e.target.value));
   }, [dispatch]);
 
   return (
@@ -67,4 +66,4 @@ const StoreFilter = () => {
   );
 };
 
-export default StoreFilter;
+export default React.memo(StoreFilter);

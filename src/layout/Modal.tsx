@@ -1,12 +1,11 @@
 import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
-import { Typography } from '@material-ui/core';
+import { Typography, Modal as MUIModal } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import { useSelector } from 'react-redux';
-import { modalSelector } from '../store/modal/modalSlice';
+import { IState } from '../types';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   modal: {
@@ -26,32 +25,35 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-export default function TransitionsModal() {
-  const { modal, modalMessage } = useSelector(modalSelector);
+const Modal = () => {
+  const modalState = useSelector((state: IState) => state.notificationReducer);
   const classes = useStyles();
+
   return (
-    <Modal
+    <MUIModal
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       className={classes.modal}
-      open={modal}
+      open={modalState.modal}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{
         timeout: 500,
       }}
     >
-      <Fade in={modal}>
+      <Fade in={modalState.modal}>
         <Paper className={classes.paper}>
           <Typography
             align="center"
             className={classes.text}
             variant="h5"
           >
-            {modalMessage}
+            {modalState.modalMessage}
           </Typography>
         </Paper>
       </Fade>
-    </Modal>
+    </MUIModal>
   );
-}
+};
+
+export default React.memo(Modal);
